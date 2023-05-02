@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="chat-box" id ="chat-box">
+		<div class="menu-link">
+			<a href="{{ url_for('menu') }}">View Menu</a>
+		</div>
+	</div>
+	<form id="message-form" action="{{ url_for('get_chatbot_response') }}" method="POST">
+		<input type="text" name="user_input" class="input-box" placeholder="Type your message here...">
+		<button type="submit">Send</button>
+		<div id="loader" style="display: none;"></div>
+	</form>
+
+{% endblock %}
+
+{% block scripts %}
+	<script>
+		var chatBox = document.getElementById("chat-box");
+		chatBox.scrollTop = chatBox.scrollHeight;
+		
+		var messageForm = document.getElementById("message-form");
+
+		messageForm.addEventListener("submit", function(event) {
+			event.preventDefault();
+
+			var userInput = event.target.elements["user_input"].value;
+			chatBox.innerHTML += '<div class="chat-message right">' + userInput + '</div>';
+			event.target.elements["user_input"].value = '';
+			chatBox.scrollTop = chatBox.scrollHeight;
+			const Http = new XMLHttpRequest();
+			const url='http://127.0.0.1:5000/chat';
+			var resp = '';
+			Http.onreadystatechange = function() {
+				if (Http.readyState == XMLHttpRequest.DONE) {
+					resp = Http.responseText;
+				}
+			}
+			Http.open("POST", url);
+			Http.setRequestHeader('Access-Control-Allow-Origin', '*');
+			Http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+			const body = JSON.stringify(
+				{'user_input': userInput}
+			)
+			
+			Http.send(body);
+
+			
+			console.log(resp);
+			// Wait 2 seconds before showing bot response
+			
+			setTimeout(function() {
+				showBotTyping();
+				setTimeout(function() {
+					const botResponse = resp;
+					chatBox.removeChild(document.getElementById("indi"));
+					//removeBotTyping();
+					//document.querySelector('.typing-indicator').remove();
+					chatBox.innerHTML += '<div class="chat-message left">' + botResponse + '</div>';
+					chatBox.scrollTop = chatBox.scrollHeight;
+				}, 2000);
+			}, 1000);
+		});
+
+		function showBotTyping() {
+			chatBox.innerHTML += '<div class="chat-message left" id="indi"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
+			chatBox.scrollTop = chatBox.scrollHeight;
+		}
+
+		function removeBotTyping() {
+			var typingIndicators = document.getElementById("indi");
+			console.log(typingIndicators.length);
+			if (typingIndicators.length > 0) {
+				typingIndicators.remove();
+				// chatBox.removeChild(typingIndicators[typingIndicators.length - 1].parentNode);
+			}
+		}
+		
+	</script>
+{% endblock %}
