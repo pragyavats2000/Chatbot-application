@@ -5,6 +5,8 @@ from nltk.tokenize import word_tokenize
 nltk.download('punkt')
 nltk.download('wordnet')
 import sqlite3
+from flask import Flask, render_template, request
+import time
 
 app = Flask(__name__)
 
@@ -68,10 +70,6 @@ for pattern, responses in pairs:
 chatbot = Chat(lemmatized_pairs, reflections)
 
 print("Welcome to our restaurant! How can I assist you today?")
-
-from flask import Flask, render_template, request
-import time
-app = Flask(__name__)
 
 @app.route('/')
 def home():
