@@ -6,6 +6,8 @@ nltk.download('punkt')
 nltk.download('wordnet')
 import sqlite3
 
+app = Flask(__name__)
+
 try:
     conn = sqlite3.connect('restaurant.db')
     c = conn.cursor()
