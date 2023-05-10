@@ -3,6 +3,7 @@ from nltk.chat.util import Chat, reflections
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 nltk.download('punkt')
+nltk.download('wordnet')
 import sqlite3
 
 try:
